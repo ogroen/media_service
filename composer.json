@@ -1,0 +1,17 @@
+{
+    "name": "ogreon/media_service",
+    "autoload": {
+        "psr-4": {
+            "Ogreon\\MediaService\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "damir",
+            "email": "insomnia.kzn@gmail.com"
+        }
+    ],
+    "require": {
+        "cloudinary/cloudinary_php": "1.20.0"
+    }
+}
