@@ -1,7 +1,7 @@
 <?php
 
 
-namespace MediaService {
+namespace Ogroen\MediaService {
 
     class CloudinaryService implements MediaServiceInterface
     {
