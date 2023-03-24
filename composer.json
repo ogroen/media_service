@@ -3,7 +3,7 @@
     "description": "MediaService package",
     "autoload": {
         "psr-4": {
-            "ogroen\\MediaService\\": "src/"
+            "Ogroen\\MediaService\\": "src/"
         }
     },
     "authors": [
