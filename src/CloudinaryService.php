@@ -77,6 +77,11 @@ namespace Ogroen\MediaService {
             // TODO: Implement listDir() method.
             return [];
         }
+
+        public function clone(string $sourcePath, string $destinationPath): MediaObject
+        {
+            throw new \Exception('Implement clone() method.');
+        }
     }
 
 }

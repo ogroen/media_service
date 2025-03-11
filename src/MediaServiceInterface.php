@@ -17,6 +17,13 @@ namespace Ogroen\MediaService {
          */
         public function upload($filePath, $params = []) : MediaObject;
 
+        /**
+         * @param string $sourcePath
+         * @param string $destinationPath
+         * @return MediaObject
+         */
+        public function clone(string $sourcePath, string $destinationPath) : MediaObject;
+
         public function remove($cdnId);
 
         /**

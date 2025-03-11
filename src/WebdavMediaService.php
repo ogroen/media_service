@@ -100,6 +100,50 @@ namespace Ogroen\MediaService {
 
             return $list;
         }
+
+        public function clone(string $sourcePath, string $destinationPath): MediaObject
+        {
+            //Возможно папка не существует, что бы создать его закинем файл пустышку
+            $directoryUrl = explode('/', $destinationPath);
+            array_pop($directoryUrl);
+            $directoryUrl = implode('/', $directoryUrl);
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl . $directoryUrl . '/dummy.txt');
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PUT");
+            curl_setopt($ch, CURLOPT_USERPWD, $this->login . ":" . $this->password);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_POSTFIELDS, '');
+            $response = curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($code != 201 && $code != 204) {
+                throw new WebDavException($response);
+            }
+
+            //скопируем в место назначения
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl . $sourcePath);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "COPY");
+            curl_setopt($ch, CURLOPT_USERPWD, $this->login . ":" . $this->password);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Destination:' . $this->webdavUrl . $destinationPath]);
+            $response = curl_exec($ch);
+            $code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+
+            if ($code != 201 && $code != 204) {
+                throw new WebDavException($response);
+            }
+
+            return new MediaObject(sprintf('%s/loaded/%s', $this->cdnUrl, $destinationPath));
+        }
     }
 
 }
