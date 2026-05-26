@@ -24,7 +24,9 @@ namespace Ogroen\MediaService {
          */
         public function clone(string $sourcePath, string $destinationPath) : MediaObject;
 
-        public function remove($cdnId);
+        public function move(string $sourcePath, string $destinationPath);
+
+        public function remove(string $sourcePath);
 
         /**
          * @param CdnFileInterface $file
