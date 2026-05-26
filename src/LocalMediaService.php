@@ -70,7 +70,12 @@ namespace Ogroen\MediaService {
             return new MediaObject(sprintf('%s/loaded/%s/%s', $this->cdnUrl, $objectPath, $name), $name);
         }
 
-        public function remove($cdnId)
+        public function move(string $sourcePath, string $destinationPath)
+        {
+            // TODO: Implement remove() method.
+        }
+
+        public function remove(string $sourcePath)
         {
             // TODO: Implement remove() method.
         }

@@ -3,7 +3,7 @@
 
 namespace Ogroen\MediaService {
 
-    class WebdavMediaService implements MediaServiceInterface
+    class WebdavMediaService implements MediaServiceInterface // test
     {
         private $cdnUrl;
         private $webdavUrl;
@@ -70,10 +70,51 @@ namespace Ogroen\MediaService {
             return new MediaObject(sprintf('%s/loaded/%s/%s', $this->cdnUrl, $objectPath, $name), $name);
         }
 
-        public function remove($cdnId)
+        public function remove(string $sourcePath)
         {
-            // TODO: Implement remove() method.
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl.$sourcePath);
+            curl_setopt($ch, CURLOPT_USERPWD, $this->login.":".$this->password);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST  , 'DELETE');
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($response) {
+                throw new WebDavException($response);
+            }
         }
+
+        public function move(string $sourcePath, string $destinationPath) : MediaObject
+        {
+            $from = $this->webdavUrl . $sourcePath;
+            $to = $this->webdavUrl . $destinationPath;
+
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $from);
+            curl_setopt($ch, CURLOPT_USERPWD,  $this->login.":".$this->password);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST  , 'MOVE');
+            curl_setopt($ch, CURLOPT_HTTPHEADER,    [ 'Destination: '.$to]);
+
+            $response = curl_exec($ch);
+            $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($response) {
+                throw new WebDavException($response);
+            }
+
+            $destinationPathArray = explode('/', $destinationPath);
+            $name = end($destinationPathArray);
+
+            return new MediaObject(sprintf('%s/loaded/%s', $this->cdnUrl, $destinationPath), $name);
+        }
+
+
 
         public function getUrl(CdnFileInterface $file, $params = [])
         {
@@ -145,5 +186,4 @@ namespace Ogroen\MediaService {
             return new MediaObject(sprintf('%s/loaded/%s', $this->cdnUrl, $destinationPath));
         }
     }
-
 }
