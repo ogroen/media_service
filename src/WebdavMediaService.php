@@ -197,16 +197,18 @@ namespace Ogroen\MediaService {
             curl_setopt($ch, CURLOPT_HEADER, 1);
             curl_setopt($ch, CURLOPT_HTTPHEADER, ['Depth: 0', 'Content-Type: application/xml']);
             $response = curl_exec($ch);
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $xml_body = substr($response, $header_size);
             $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
             curl_close($ch);
 
             if ($http_code === 207) {
-                $xml = simplexml_load_string($response);
+                $xml = simplexml_load_string($xml_body);
                 $xml->registerXPathNamespace('d', 'DAV:');
                 $result = $xml->xpath('//d:getcontentlength');
 
                 if (!empty($result)) {
-                    return $result[0];
+                    return (int)$result[0];
                 } else {
                     throw new WebDavException($response);
                 }
