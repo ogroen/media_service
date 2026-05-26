@@ -40,6 +40,8 @@ namespace Ogroen\MediaService {
          * @return array
          */
         public function listDir(string $name) : array;
+
+        public function getFileSize(string $sourcePath) : int;
     }
 
 }

@@ -185,5 +185,36 @@ namespace Ogroen\MediaService {
 
             return new MediaObject(sprintf('%s/loaded/%s', $this->cdnUrl, $destinationPath));
         }
+
+        public function getFileSize(string $sourcePath): int
+        {
+            $ch = curl_init();
+            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl . $sourcePath);
+            curl_setopt($ch, CURLOPT_CUSTOMREQUEST, "PROPFIND");
+            curl_setopt($ch, CURLOPT_USERPWD, $this->login . ":" . $this->password);
+            curl_setopt($ch, CURLOPT_TIMEOUT, 30);
+            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($ch, CURLOPT_HEADER, 1);
+            curl_setopt($ch, CURLOPT_HTTPHEADER, ['Depth: 0', 'Content-Type: application/xml']);
+            $response = curl_exec($ch);
+            $header_size = curl_getinfo($ch, CURLINFO_HEADER_SIZE);
+            $xml_body = substr($response, $header_size);
+            $http_code = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            curl_close($ch);
+
+            if ($http_code === 207) {
+                $xml = simplexml_load_string($xml_body);
+                $xml->registerXPathNamespace('d', 'DAV:');
+                $result = $xml->xpath('//d:getcontentlength');
+
+                if (!empty($result)) {
+                    return (int)$result[0];
+                } else {
+                    throw new WebDavException($response);
+                }
+            } else {
+                throw new WebDavException($response);
+            }
+        }
     }
 }

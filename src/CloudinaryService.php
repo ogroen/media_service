@@ -82,6 +82,16 @@ namespace Ogroen\MediaService {
         {
             throw new \Exception('Implement clone() method.');
         }
+
+        public function move(string $sourcePath, string $destinationPath)
+        {
+            // TODO: Implement move() method.
+        }
+
+        public function getFileSize(string $sourcePath): int
+        {
+            // TODO: Implement getFileSize() method.
+        }
     }
 
 }
