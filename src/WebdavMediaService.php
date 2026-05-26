@@ -73,7 +73,7 @@ namespace Ogroen\MediaService {
         public function remove(string $sourcePath)
         {
             $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl.$sourcePath.'/');
+            curl_setopt($ch, CURLOPT_URL, $this->webdavUrl.$sourcePath);
             curl_setopt($ch, CURLOPT_USERPWD, $this->login.":".$this->password);
             curl_setopt($ch, CURLOPT_TIMEOUT, 30);
             curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
